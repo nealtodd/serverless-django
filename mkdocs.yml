@@ -12,3 +12,5 @@ markdown_extensions:
 
 nav:
     - Home: index.md
+    - DjangoCon Europe 2019:
+      - Speedrun: djconeu-speedrun.md
