@@ -1,0 +1,14 @@
+site_name: Serverless Django
+docs_dir: 'docs_src'
+site_dir: 'docs'
+dev_addr: 'localhost:9000'
+theme:
+  name: 'material'
+markdown_extensions:
+  - codehilite
+  - admonition
+  - toc:
+      permalink: true
+
+nav:
+    - Home: index.md
