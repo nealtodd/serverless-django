@@ -38,7 +38,7 @@ using the AWS Console beyond the prerequistites.
 This cuts everything back to the miminum shell commands and assumes every step runs smoothly.
 
 This code is available in this
-[source script](https://github.com/nealtodd/serverless-django/samples/speedrun.sh).
+[source script](https://github.com/nealtodd/serverless-django/blob/master/samples/speedrun.sh).
 
 In this example `${SITE}` is the name of the project being created and also used to name
 related things like S3 buckets. In my talk this was `speedrun-live`.
