@@ -329,6 +329,7 @@
 Zappa for deployment.</p>
 <p>It starts from nothing locally and ends up with a live application without any user interaction or
 using the AWS Console beyond the prerequistites.</p>
+<p><a href="https://asciinema.org/a/236307">View</a> an Asciinema Cast of a speedrun.</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Python 3 local environment</li>
@@ -366,14 +367,14 @@ using the AWS Console beyond the prerequistites.</p>
 <a href="https://github.com/nealtodd/serverless-django/blob/master/samples/speedrun.sh">source script</a>.</p>
 <p>In this example <code>${SITE}</code> is the name of the project being created and also used to name
 related things like S3 buckets. In my talk this was <code>speedrun-live</code>.</p>
+<p>If you happen to read this before my talk an example is at this "Here's One I Made Earlier" site:
+<a href="https://speedrun-hoime.bygge.net">speedrun-hoime.bygge.net</a>.</p>
 <p>The deployment is made to the AWS London region (<code>eu-west-1</code>).</p>
 <p>Name it what you want (although the S3 bucket names that will be created must be globally unique):</p>
 <div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SITE</span><span class="o">=</span>mysite
 </pre></div>
 
 
-<p>If you happen to read this before my talk an example is at this "Here's One I Made Earlier" site:
-<a href="https://speedrun-hoime.bygge.net">speedrun-hoime.bygge.net</a>.</p>
 <p>Create a project directory:</p>
 <div class="codehilite"><pre><span></span>mkdir <span class="si">${</span><span class="nv">SITE</span><span class="si">}</span> <span class="o">&amp;&amp;</span> <span class="nb">cd</span> <span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>
 </pre></div>
