@@ -8,6 +8,8 @@ Zappa for deployment.
 It starts from nothing locally and ends up with a live application without any user interaction or
 using the AWS Console beyond the prerequistites.
 
+[View](https://asciinema.org/a/236307) an Asciinema Cast of a speedrun.
+
 ## Prerequisites
 
 - Python 3 local environment
@@ -43,6 +45,9 @@ This code is available in this
 In this example `${SITE}` is the name of the project being created and also used to name
 related things like S3 buckets. In my talk this was `speedrun-live`.
 
+If you happen to read this before my talk an example is at this "Here's One I Made Earlier" site:
+[speedrun-hoime.bygge.net](https://speedrun-hoime.bygge.net).
+
 The deployment is made to the AWS London region (`eu-west-1`).
 
 Name it what you want (although the S3 bucket names that will be created must be globally unique):
@@ -50,9 +55,6 @@ Name it what you want (although the S3 bucket names that will be created must be
 ```bash
 export SITE=mysite
 ```
-
-If you happen to read this before my talk an example is at this "Here's One I Made Earlier" site:
-[speedrun-hoime.bygge.net](https://speedrun-hoime.bygge.net).
 
 Create a project directory:
 
