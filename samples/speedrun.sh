@@ -4,8 +4,8 @@
 
 mkdir ${SITE} && cd ${SITE}
 
-python3 -m venv ~/.venvs/${SITE}-env
-source ~/.venvs/${SITE}-env/bin/activate
+python3 -m venv ./venv
+source ./venv/bin/activate
 pip install --upgrade pip
 
 pip install zappa zappa-django-utils django-storages awscli
@@ -25,8 +25,9 @@ DATABASES = {
 
 ALLOWED_HOSTS = ['.eu-west-2.amazonaws.com', '.bygge.net']
 
-AWS_STORAGE_BUCKET_NAME = '${SITE}-static'
 INSTALLED_APPS += ('storages',)
+AWS_STORAGE_BUCKET_NAME = '${SITE}-static'
+AWS_QUERYSTRING_AUTH = False
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 EOF

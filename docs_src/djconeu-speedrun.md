@@ -66,8 +66,8 @@ mkdir ${SITE} && cd ${SITE}
 Zappa needs a virtualenv to operate in:
 
 ```bash
-python3 -m venv ./venvs/${SITE}-env
-source ~/.venvs/${SITE}-env/bin/activate
+python3 -m venv ./venv
+source ./venv/bin/activate
 pip install --upgrade pip
 ```
 
@@ -104,8 +104,9 @@ DATABASES = {
 
 ALLOWED_HOSTS = ['.eu-west-2.amazonaws.com', '.bygge.net']
 
-AWS_STORAGE_BUCKET_NAME = '${SITE}-static'
 INSTALLED_APPS += ('storages',)
+AWS_STORAGE_BUCKET_NAME = '${SITE}-static'
+AWS_QUERYSTRING_AUTH = False
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
@@ -114,11 +115,11 @@ EOF
 ```
 
 !!! Notes
-    - Use a SQLite database hosted in a S3 bucket via the `zappa_django_utils.db.backends.s3sqlite` backend
+    - This uses a SQLite database hosted in a S3 bucket via the `zappa_django_utils.db.backends.s3sqlite` backend
     - `ALLOWED_HOSTS` covers the domain that AWS creates for the Lamdba function and also the custom domain
     that will be configured with Zappa.
-    - Django Storages is added and configured to send static assets and media to an S3 bucket that will be
-    created
+    - Django Storages is added and configured to send unsigned static assets and media to a public S3 bucket
+    that will be created.
 
 We're creating a Zappa settings file directly with the configuration we want rather than use `zappa init`
 to create one:
