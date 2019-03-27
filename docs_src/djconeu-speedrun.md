@@ -13,7 +13,6 @@ using the AWS Console beyond the prerequistites.
 ## Prerequisites
 
 - Python 3 local environment
-- AWS CLI client
 - AWS Account with:
     - IAM User with Programatic access and sufficient permissions
       (_Administrative Access_ is the equivalent of root)
@@ -43,7 +42,9 @@ This code is available in this
 [source script](https://github.com/nealtodd/serverless-django/blob/master/samples/speedrun.sh).
 
 In this example `${SITE}` is the name of the project being created and also used to name
-related things like S3 buckets. In my talk this was `speedrun-live`.
+related things like S3 buckets.
+
+The IAM User name in this example is `iam-zappa`.
 
 If you happen to read this before my talk an example is at this "Here's One I Made Earlier" site:
 [speedrun-hoime.bygge.net](https://speedrun-hoime.bygge.net).
@@ -65,7 +66,7 @@ mkdir ${SITE} && cd ${SITE}
 Zappa needs a virtualenv to operate in:
 
 ```bash
-python3 -m venv ~/.venvs/${SITE}-env
+python3 -m venv ./venvs/${SITE}-env
 source ~/.venvs/${SITE}-env/bin/activate
 pip install --upgrade pip
 ```
@@ -73,8 +74,10 @@ pip install --upgrade pip
 Install our support packages:
 
 ```bash
-pip install zappa zappa-django-utils django-storages
+pip install zappa zappa-django-utils django-storages awscli
 ```
+
+`awscli` doesn't need to be installed in the vritualenv if you already have it available.
 
 Install our sample Django application, in this case Wagtail's [Bakery Demo](https://github.com/wagtail/bakerydemo):
 
@@ -125,7 +128,7 @@ cat << EOF > zappa_settings.json
 {
     "dev": {
         "django_settings": "bakerydemo.settings.dev",
-        "profile_name": "zappa",
+        "profile_name": "iam-zappa",
         "project_name": "${SITE}",
         "runtime": "python3.6",
         "s3_bucket": "${SITE}-zappa",
@@ -149,6 +152,8 @@ EOF
     - The `domain` and `certificate_arn` settings are for the custom domain. These can be left out
     if not using a custom domain. The `${CERT_ARN}` comes from AWS Certificate Manager and is the ARN
     (Amazon Resource Name) of the SSL certificate generated for the domain in the prerequisites.
+    It won't hurt to leave them in even with an undefined `${CERT_ARN}` if the `certify` step
+    (further down) is skipped.
     - `aws_environment_variables` is an example of setting an environment variable and having it
     accessible in the AWS Lambda console. Here, it allows Django's `DEBUG` mode to be toggled.
 
@@ -157,13 +162,13 @@ will create its own bucket to store the packaged application on deployment (base
 in Zappa settings. We make the static bucket publicly accessible and apply a permissive CORs policy:
 
 ```bash
-aws s3api create-bucket --bucket ${SITE}-db --profile zappa \
+aws s3api create-bucket --bucket ${SITE}-db --profile iam-zappa \
     --region eu-west-2 --create-bucket-configuration LocationConstraint=eu-west-2
-aws s3api create-bucket --bucket ${SITE}-static --profile zappa \
+aws s3api create-bucket --bucket ${SITE}-static --profile iam-zappa \
     --region eu-west-2 --create-bucket-configuration LocationConstraint=eu-west-2
-aws s3api put-bucket-cors --bucket ${SITE}-static --profile zappa --cors-configuration \
+aws s3api put-bucket-cors --bucket ${SITE}-static --profile iam-zappa --cors-configuration \
     '{"CORSRules": [{"AllowedOrigins": ["*"], "AllowedMethods": ["GET"]}]}'
-aws s3api put-bucket-policy --bucket ${SITE}-static --profile zappa --policy \
+aws s3api put-bucket-policy --bucket ${SITE}-static --profile iam-zappa --policy \
     '{"Statement": [{"Effect": "Allow","Principal": "*","Action": "s3:GetObject","Resource": "arn:aws:s3:::'${SITE}'-static/*"}]}'
 ```
 
@@ -171,7 +176,7 @@ The Wagtail Bakery Demo comes with sample content, including images so we sync t
 (where media is also stored). This is specific to the Wagtail Bakery Demo:
 
 ```bash
-aws s3 sync bakerydemo/media/original_images/ s3://${SITE}-static/original_images/ --profile zappa
+aws s3 sync bakerydemo/media/original_images/ s3://${SITE}-static/original_images/ --profile iam-zappa
 ```
 
 Okay, that's the configuration out of the way, time to use Zappa to deploy the application as a Lambda function:

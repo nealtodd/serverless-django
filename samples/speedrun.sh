@@ -8,7 +8,7 @@ python3 -m venv ~/.venvs/${SITE}-env
 source ~/.venvs/${SITE}-env/bin/activate
 pip install --upgrade pip
 
-pip install zappa zappa-django-utils django-storages
+pip install zappa zappa-django-utils django-storages awscli
 
 git clone https://github.com/wagtail/bakerydemo.git
 cd bakerydemo
@@ -35,7 +35,7 @@ cat << EOF > zappa_settings.json
 {
     "dev": {
         "django_settings": "bakerydemo.settings.dev",
-        "profile_name": "zappa",
+        "profile_name": "iam-zappa",
         "project_name": "${SITE}",
         "runtime": "python3.6",
         "s3_bucket": "${SITE}-zappa",
@@ -50,15 +50,15 @@ cat << EOF > zappa_settings.json
 }
 EOF
 
-aws s3api create-bucket --bucket ${SITE}-db --profile zappa \
+aws s3api create-bucket --bucket ${SITE}-db --profile iam-zappa \
 	--region eu-west-2 --create-bucket-configuration LocationConstraint=eu-west-2
-aws s3api create-bucket --bucket ${SITE}-static --profile zappa \
+aws s3api create-bucket --bucket ${SITE}-static --profile iam-zappa \
 	--region eu-west-2 --create-bucket-configuration LocationConstraint=eu-west-2
-aws s3api put-bucket-cors --bucket ${SITE}-static --profile zappa --cors-configuration \
+aws s3api put-bucket-cors --bucket ${SITE}-static --profile iam-zappa --cors-configuration \
 	'{"CORSRules": [{"AllowedOrigins": ["*"], "AllowedMethods": ["GET"]}]}'
-aws s3api put-bucket-policy --bucket ${SITE}-static --profile zappa --policy \
+aws s3api put-bucket-policy --bucket ${SITE}-static --profile iam-zappa --policy \
 	'{"Statement": [{"Effect": "Allow","Principal": "*","Action": "s3:GetObject","Resource": "arn:aws:s3:::'${SITE}'-static/*"}]}'
-aws s3 sync bakerydemo/media/original_images/ s3://${SITE}-static/original_images/ --profile zappa
+aws s3 sync bakerydemo/media/original_images/ s3://${SITE}-static/original_images/ --profile iam-zappa
 
 zappa deploy dev
 zappa certify dev -y
