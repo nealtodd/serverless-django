@@ -333,7 +333,6 @@ using the AWS Console beyond the prerequistites.</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Python 3 local environment</li>
-<li>AWS CLI client</li>
 <li>AWS Account with:<ul>
 <li>IAM User with Programatic access and sufficient permissions
   (<em>Administrative Access</em> is the equivalent of root)</li>
@@ -366,7 +365,8 @@ using the AWS Console beyond the prerequistites.</p>
 <p>This code is available in this
 <a href="https://github.com/nealtodd/serverless-django/blob/master/samples/speedrun.sh">source script</a>.</p>
 <p>In this example <code>${SITE}</code> is the name of the project being created and also used to name
-related things like S3 buckets. In my talk this was <code>speedrun-live</code>.</p>
+related things like S3 buckets.</p>
+<p>The IAM User name in this example is <code>iam-zappa</code>.</p>
 <p>If you happen to read this before my talk an example is at this "Here's One I Made Earlier" site:
 <a href="https://speedrun-hoime.bygge.net">speedrun-hoime.bygge.net</a>.</p>
 <p>The deployment is made to the AWS London region (<code>eu-west-1</code>).</p>
@@ -381,17 +381,18 @@ related things like S3 buckets. In my talk this was <code>speedrun-live</code>.<
 
 
 <p>Zappa needs a virtualenv to operate in:</p>
-<div class="codehilite"><pre><span></span>python3 -m venv ~/.venvs/<span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>-env
+<div class="codehilite"><pre><span></span>python3 -m venv ./venvs/<span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>-env
 <span class="nb">source</span> ~/.venvs/<span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>-env/bin/activate
 pip install --upgrade pip
 </pre></div>
 
 
 <p>Install our support packages:</p>
-<div class="codehilite"><pre><span></span>pip install zappa zappa-django-utils django-storages
+<div class="codehilite"><pre><span></span>pip install zappa zappa-django-utils django-storages awscli
 </pre></div>
 
 
+<p><code>awscli</code> doesn't need to be installed in the vritualenv if you already have it available.</p>
 <p>Install our sample Django application, in this case Wagtail's <a href="https://github.com/wagtail/bakerydemo">Bakery Demo</a>:</p>
 <div class="codehilite"><pre><span></span>git clone https://github.com/wagtail/bakerydemo.git
 <span class="nb">cd</span> bakerydemo
@@ -439,7 +440,7 @@ to create one:</p>
 <span class="s">{</span>
 <span class="s">    &quot;dev&quot;: {</span>
 <span class="s">        &quot;django_settings&quot;: &quot;bakerydemo.settings.dev&quot;,</span>
-<span class="s">        &quot;profile_name&quot;: &quot;zappa&quot;,</span>
+<span class="s">        &quot;profile_name&quot;: &quot;iam-zappa&quot;,</span>
 <span class="s">        &quot;project_name&quot;: &quot;${SITE}&quot;,</span>
 <span class="s">        &quot;runtime&quot;: &quot;python3.6&quot;,</span>
 <span class="s">        &quot;s3_bucket&quot;: &quot;${SITE}-zappa&quot;,</span>
@@ -465,7 +466,9 @@ to create one:</p>
 initial sync of the Bakery Demo's static assets to the S3 bucket</li>
 <li>The <code>domain</code> and <code>certificate_arn</code> settings are for the custom domain. These can be left out
 if not using a custom domain. The <code>${CERT_ARN}</code> comes from AWS Certificate Manager and is the ARN
-(Amazon Resource Name) of the SSL certificate generated for the domain in the prerequisites.</li>
+(Amazon Resource Name) of the SSL certificate generated for the domain in the prerequisites.
+It won't hurt to leave them in even with an undefined <code>${CERT_ARN}</code> if the <code>certify</code> step
+(further down) is skipped.</li>
 <li><code>aws_environment_variables</code> is an example of setting an environment variable and having it
 accessible in the AWS Lambda console. Here, it allows Django's <code>DEBUG</code> mode to be toggled.</li>
 </ul>
@@ -473,20 +476,20 @@ accessible in the AWS Lambda console. Here, it allows Django's <code>DEBUG</code
 <p>In order to store the SQLite database and the static assets &amp; media we create two S3 buckets. Zappa
 will create its own bucket to store the packaged application on deployment (based on the <code>s3_bucket</code>
 in Zappa settings. We make the static bucket publicly accessible and apply a permissive CORs policy:</p>
-<div class="codehilite"><pre><span></span>aws s3api create-bucket --bucket <span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>-db --profile zappa <span class="se">\</span>
+<div class="codehilite"><pre><span></span>aws s3api create-bucket --bucket <span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>-db --profile iam-zappa <span class="se">\</span>
     --region eu-west-2 --create-bucket-configuration <span class="nv">LocationConstraint</span><span class="o">=</span>eu-west-2
-aws s3api create-bucket --bucket <span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>-static --profile zappa <span class="se">\</span>
+aws s3api create-bucket --bucket <span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>-static --profile iam-zappa <span class="se">\</span>
     --region eu-west-2 --create-bucket-configuration <span class="nv">LocationConstraint</span><span class="o">=</span>eu-west-2
-aws s3api put-bucket-cors --bucket <span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>-static --profile zappa --cors-configuration <span class="se">\</span>
+aws s3api put-bucket-cors --bucket <span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>-static --profile iam-zappa --cors-configuration <span class="se">\</span>
     <span class="s1">&#39;{&quot;CORSRules&quot;: [{&quot;AllowedOrigins&quot;: [&quot;*&quot;], &quot;AllowedMethods&quot;: [&quot;GET&quot;]}]}&#39;</span>
-aws s3api put-bucket-policy --bucket <span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>-static --profile zappa --policy <span class="se">\</span>
+aws s3api put-bucket-policy --bucket <span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>-static --profile iam-zappa --policy <span class="se">\</span>
     <span class="s1">&#39;{&quot;Statement&quot;: [{&quot;Effect&quot;: &quot;Allow&quot;,&quot;Principal&quot;: &quot;*&quot;,&quot;Action&quot;: &quot;s3:GetObject&quot;,&quot;Resource&quot;: &quot;arn:aws:s3:::&#39;</span><span class="si">${</span><span class="nv">SITE</span><span class="si">}</span><span class="s1">&#39;-static/*&quot;}]}&#39;</span>
 </pre></div>
 
 
 <p>The Wagtail Bakery Demo comes with sample content, including images so we sync them to the static bucket
 (where media is also stored). This is specific to the Wagtail Bakery Demo:</p>
-<div class="codehilite"><pre><span></span>aws s3 sync bakerydemo/media/original_images/ s3://<span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>-static/original_images/ --profile zappa
+<div class="codehilite"><pre><span></span>aws s3 sync bakerydemo/media/original_images/ s3://<span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>-static/original_images/ --profile iam-zappa
 </pre></div>
 
 
