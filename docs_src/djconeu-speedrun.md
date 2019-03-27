@@ -49,7 +49,7 @@ The IAM User name in this example is `iam-zappa`.
 If you happen to read this before my talk an example is at this "Here's One I Made Earlier" site:
 [speedrun-hoime.bygge.net](https://speedrun-hoime.bygge.net).
 
-The deployment is made to the AWS London region (`eu-west-1`).
+The deployment is made to the AWS London region (`eu-west-2`).
 
 Name it what you want (although the S3 bucket names that will be created must be globally unique):
 
