@@ -381,8 +381,8 @@ related things like S3 buckets.</p>
 
 
 <p>Zappa needs a virtualenv to operate in:</p>
-<div class="codehilite"><pre><span></span>python3 -m venv ./venvs/<span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>-env
-<span class="nb">source</span> ~/.venvs/<span class="si">${</span><span class="nv">SITE</span><span class="si">}</span>-env/bin/activate
+<div class="codehilite"><pre><span></span>python3 -m venv ./venv
+<span class="nb">source</span> ./venv/bin/activate
 pip install --upgrade pip
 </pre></div>
 
@@ -414,8 +414,9 @@ the Django configuration as appropriate).</p>
 
 <span class="s">ALLOWED_HOSTS = [&#39;.eu-west-2.amazonaws.com&#39;, &#39;.bygge.net&#39;]</span>
 
-<span class="s">AWS_STORAGE_BUCKET_NAME = &#39;${SITE}-static&#39;</span>
 <span class="s">INSTALLED_APPS += (&#39;storages&#39;,)</span>
+<span class="s">AWS_STORAGE_BUCKET_NAME = &#39;${SITE}-static&#39;</span>
+<span class="s">AWS_QUERYSTRING_AUTH = False</span>
 <span class="s">STATICFILES_STORAGE = &#39;storages.backends.s3boto3.S3Boto3Storage&#39;</span>
 <span class="s">DEFAULT_FILE_STORAGE = &#39;storages.backends.s3boto3.S3Boto3Storage&#39;</span>
 
@@ -427,11 +428,11 @@ the Django configuration as appropriate).</p>
 <div class="admonition notes">
 <p class="admonition-title">Notes</p>
 <ul>
-<li>Use a SQLite database hosted in a S3 bucket via the <code>zappa_django_utils.db.backends.s3sqlite</code> backend</li>
+<li>This uses a SQLite database hosted in a S3 bucket via the <code>zappa_django_utils.db.backends.s3sqlite</code> backend</li>
 <li><code>ALLOWED_HOSTS</code> covers the domain that AWS creates for the Lamdba function and also the custom domain
 that will be configured with Zappa.</li>
-<li>Django Storages is added and configured to send static assets and media to an S3 bucket that will be
-created</li>
+<li>Django Storages is added and configured to send unsigned static assets and media to a public S3 bucket
+that will be created.</li>
 </ul>
 </div>
 <p>We're creating a Zappa settings file directly with the configuration we want rather than use <code>zappa init</code>
