@@ -533,6 +533,7 @@ zappa manage dev load_initial_data
 
 <p>Visiting the custom domain URL (or the AWS Gateway URL if a custom domain wasn't used) shows us our serverless
 Wagtail Bakery Demo site.</p>
+<p>(Wagtail Admin is on <code>/admin/</code> (log in with <code>admin</code> and <code>changeme</code>) and Django Admin is on <code>/django-admin/</code>)</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Page request might feel slighlty sluggish but this isn't an effect of them being serverless but rather because
@@ -544,6 +545,8 @@ but that's another topic.</p>
 <p class="admonition-title">Note</p>
 <p>Subsequent deployments of the site are made with <code>zappa update dev</code></p>
 </div>
+<p>Steps to remove the site from AWS are available in a
+<a href="https://github.com/nealtodd/serverless-django/blob/master/samples/speedrun_teardown.sh">teardown script</a>.</p>
                 
                   
                 
