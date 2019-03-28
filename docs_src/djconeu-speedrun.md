@@ -8,7 +8,8 @@ Zappa for deployment.
 It starts from nothing locally and ends up with a live application without any user interaction or
 using the AWS Console beyond the prerequistites.
 
-[View](https://asciinema.org/a/236307) an Asciinema Cast of a speedrun.
+[View an Asciinema Cast of a speedrun](https://asciinema.org/a/237320)
+(a 1 minute cast reflecting 3 minutes of real-time).
 
 ## Prerequisites
 
