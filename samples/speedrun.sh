@@ -2,6 +2,8 @@
 
 [[ ! -z "$SITE" ]] || exit
 
+set -x
+
 mkdir ${SITE} && cd ${SITE}
 
 python3 -m venv ./venv

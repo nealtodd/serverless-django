@@ -13,4 +13,6 @@ aws s3 rb s3://${SITE}-zappa --force --profile iam-zappa && \
 aws iam delete-role-policy --role-name ${SITE}-dev-ZappaLambdaExecutionRole \
     --policy-name zappa-permissions --profile iam-zappa  && \
 aws iam delete-role --role-name ${SITE}-dev-ZappaLambdaExecutionRole --profile iam-zappa  && \
+aws apigateway delete-domain-name --domain-name ${SITE}.bygge.net --profile iam-zappa && \
+	--region eu-west-2
 rm -rf ${SITE}

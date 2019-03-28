@@ -227,6 +227,8 @@ zappa status dev
 Visiting the custom domain URL (or the AWS Gateway URL if a custom domain wasn't used) shows us our serverless
 Wagtail Bakery Demo site.
 
+(Wagtail Admin is on `/admin/` (log in with `admin` and `changeme`) and Django Admin is on `/django-admin/`)
+
 !!! Note
     Page request might feel slighlty sluggish but this isn't an effect of them being serverless but rather because
     we're running off a SQLite database in an S3 bucket and Zappa syncs it with a local copy within the Lambda function
@@ -235,3 +237,6 @@ Wagtail Bakery Demo site.
 
 !!! Note
     Subsequent deployments of the site are made with `zappa update dev`
+
+Steps to remove the site from AWS are available in a
+[teardown script](https://github.com/nealtodd/serverless-django/blob/master/samples/speedrun_teardown.sh).
