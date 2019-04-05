@@ -111,7 +111,7 @@ AWS_QUERYSTRING_AUTH = False
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-DEBUG = os.getenv('DJANGO', 'off') == 'on'
+DEBUG = os.getenv('DEBUG', 'off') == 'on'
 EOF
 ```
 
