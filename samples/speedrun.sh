@@ -32,6 +32,8 @@ AWS_STORAGE_BUCKET_NAME = '${SITE}-static'
 AWS_QUERYSTRING_AUTH = False
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+DEBUG = os.getenv('DEBUG', 'off') == 'on'
 EOF
 
 cat << EOF > zappa_settings.json
@@ -47,7 +49,7 @@ cat << EOF > zappa_settings.json
         "domain": "${SITE}.bygge.net",
         "certificate_arn": "${CERT_ARN}",
         "aws_environment_variables": {
-            "DEBUG": "false"
+            "DEBUG": "off"
     	}
     }
 }
